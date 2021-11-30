@@ -3,31 +3,30 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
 type Client struct {
-	Timeout               time.Duration
-	RetryTimeAfterTimeout time.Duration
+	Timeout time.Duration
 }
 
 func NewClient() *Client {
 	client := Client{
-		Timeout:               1 * time.Second,
-		RetryTimeAfterTimeout: 5 * time.Second,
+		Timeout: 1 * time.Second,
 	}
 	return &client
 }
 
 type Response struct {
-	Addresses []string
+	Streets []string
 }
 
-type jsondata []string
+type jsonData []string
 
-func (c *Client) GetContent(url string) (content *Response, err error) {
+func (c *Client) ReadStreets(url string) (content *Response, err error) {
 	client := http.Client{
 		Timeout: c.Timeout,
 	}
@@ -38,7 +37,9 @@ func (c *Client) GetContent(url string) (content *Response, err error) {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	if resp.StatusCode == http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
@@ -49,17 +50,17 @@ func (c *Client) GetContent(url string) (content *Response, err error) {
 
 		content := string(body)
 
-		var arr jsondata
+		var arr jsonData
 		_ = json.Unmarshal([]byte(content), &arr)
-		arr.deleteEmpty()
+		arr.deleteEmptyStreets()
 
-		return &Response{Addresses: arr}, nil
+		return &Response{Streets: arr}, nil
 	} else {
-		return nil, fmt.Errorf("Try to load `%s`. Response code is '%s'", url, resp.Status)
+		return nil, fmt.Errorf("get `%s` with response code '%s'", url, resp.Status)
 	}
 }
 
-func (l *jsondata) deleteEmpty() {
+func (l *jsonData) deleteEmptyStreets() {
 	var r []string
 	for _, str := range *l {
 		if str != "" {

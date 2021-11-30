@@ -14,25 +14,25 @@ func Test(t *testing.T) {
 
 	defer server.Close()
 
-	response, _ := NewClient().GetContent(server.URL)
+	response, _ := NewClient().ReadStreets(server.URL)
 
-	if len(response.Addresses) != 4 {
-		t.Fatalf(`GetContent(%s) should contain %d entries but was %d`, server.URL, 4, len(response.Addresses))
+	if len(response.Streets) != 4 {
+		t.Fatalf(`ReadStreets(%s) should contain %d entries but was %d`, server.URL, 4, len(response.Streets))
 	}
 	if response.notContains("Aachener Straße") {
-		t.Fatalf(`GetContent(%s) should contain %s`, server.URL, "Aachener Straße")
+		t.Fatalf(`ReadStreets(%s) should contain %s`, server.URL, "Aachener Straße")
 	}
 	if response.notContains("Lars-Krüger-Hof") {
-		t.Fatalf(`GetContent(%s) should contain %s`, server.URL, "Lars-Krüger-Hof")
+		t.Fatalf(`ReadStreets(%s) should contain %s`, server.URL, "Lars-Krüger-Hof")
 	}
 	if response.notContains("Lars-Krüger-Hof") {
-		t.Fatalf(`GetContent(%s) should contain %s`, server.URL, "Lars-Krüger-Hof")
+		t.Fatalf(`ReadStreets(%s) should contain %s`, server.URL, "Lars-Krüger-Hof")
 	}
 	if response.notContains("Züricher Straße") {
-		t.Fatalf(`GetContent(%s) should contain %s`, server.URL, "Züricher Straße")
+		t.Fatalf(`ReadStreets(%s) should contain %s`, server.URL, "Züricher Straße")
 	}
 	if response.contains("") {
-		t.Fatalf(`GetContent(%s) should not contain empty string`, server.URL)
+		t.Fatalf(`ReadStreets(%s) should not contain empty string`, server.URL)
 	}
 }
 
@@ -41,7 +41,7 @@ func (r Response) notContains(e string) bool {
 }
 
 func (r Response) contains(e string) bool {
-	for _, a := range r.Addresses {
+	for _, a := range r.Streets {
 		if a == e {
 			return true
 		}
