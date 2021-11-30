@@ -7,10 +7,16 @@ import (
 	"os"
 )
 
+const (
+	BaseURL = "https://web.c-trace.de"
+)
+
 func main() {
 	log.Println("Hello muellsammler!")
 
-	response, err := client.NewClient().ReadStreets("https://web.c-trace.de/bremenabfallkalender/(S(nnititlfxtt4vnvhqcudbrlk))/Data/Strassen")
+	client := client.NewClient(BaseURL)
+
+	response, err := client.ReadStreets("/bremenabfallkalender/(S(nnititlfxtt4vnvhqcudbrlk))/Data/Strassen")
 
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
