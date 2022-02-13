@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestReadStreets(t *testing.T) {
 	server := startAbfallkalenderServer(t)
 
 	defer server.Close()
